@@ -5,7 +5,7 @@
  * Author:   Aaron Kuzemchak                          *
  * URL:      http://kuzemchak.net/                    *
  * E-mail:   afkuzemchak@gmail.com                    *
- * Date:     8/18/2007                                *
+ * Date:     5/28/2008                                *
  * -------------------------------------------------- */
 
 jQuery.fn.toggleVal = function(focusClass) {
