@@ -1,6 +1,6 @@
 /* -------------------------------------------------- *
- * ToggleVal 2.0
- * Updated: 9/15/08
+ * ToggleVal 2.0.1
+ * Updated: 12/15/08
  * -------------------------------------------------- *
  * Author: Aaron Kuzemchak
  * URL: http://aaronkuzemchak.com/
@@ -36,7 +36,8 @@
 			}
 			
 			// let's give this field a special class, so we can identify it later
-			$(this).addClass("toggleval");
+			// also, we'll give it a data attribute, which will help jQuery remember what the default value is
+			$(this).addClass("toggleval").data("defText", defText);
 			
 			// now that fields are populated, let's remove the labels if applicable
 			if(theOptions.removeLabels == true) { $("label[for='" + $(this).attr("id") + "']").remove(); }
