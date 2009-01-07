@@ -1,6 +1,6 @@
 /* -------------------------------------------------- *
- * ToggleVal 2.0.1
- * Updated: 12/15/08
+ * ToggleVal 2.0.2
+ * Updated: 1/7/09
  * -------------------------------------------------- *
  * Author: Aaron Kuzemchak
  * URL: http://aaronkuzemchak.com/
