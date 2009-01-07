@@ -26,11 +26,11 @@
 				case "alt":
 					defText = $(this).attr("alt");
 					$(this).val(defText);
-					break
+					break;
 				case "label":
 					defText = $("label[for='" + $(this).attr("id") + "']").text();
 					$(this).val(defText);
-					break
+					break;
 				default:
 					defText = $(this).val();
 			}
