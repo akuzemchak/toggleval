@@ -1,23 +1,36 @@
 /* -------------------------------------------------- *
- * ToggleVal 2.0.2
- * Updated: 1/7/09
+ * ToggleVal 2.1
+ * Updated: 1/16/09
  * -------------------------------------------------- *
  * Author: Aaron Kuzemchak
  * URL: http://aaronkuzemchak.com/
- * Copyright: 2008 Aaron Kuzemchak
+ * Copyright: 2008-2009 Aaron Kuzemchak
  * License: MIT License
 ** -------------------------------------------------- */
 
 (function($) {
 	$.fn.toggleVal = function(theOptions) {
-		theOptions = $.extend({
-			focusClass: "tv-focused", // class during focus
-			changedClass: "tv-changed", // class after focus
-			populateFrom: "default", // choose from: default, label, or alt
-			removeLabels: false // remove labels associated with the fields
-		}, theOptions);
+		// check whether we want real options, or to destroy functionality
+		if(!theOptions || typeof(theOptions) == "object") {
+			theOptions = $.extend({
+				focusClass: "tv-focused", // class during focus
+				changedClass: "tv-changed", // class after focus
+				populateFrom: "default", // choose from: default, label, custom, or alt
+				text: null, // text to use in conjunction with populateFrom: custom
+				removeLabels: false // remove labels associated with the fields
+			}, theOptions);
+		}
+		else if(typeof(theOptions) == "string" && theOptions.toLowerCase() == "destroy") {
+			var destroy = true;
+		}
 		
 		return this.each(function() {
+			// unbind everything if we're destroying, and stop executing the script
+			if(destroy) {
+				$(this).unbind("focus.toggleval").unbind("blur.toggleval").removeData("defText");
+				return false;
+			}
+			
 			// define our variables
 			var defText = "";
 			
@@ -29,6 +42,10 @@
 					break;
 				case "label":
 					defText = $("label[for='" + $(this).attr("id") + "']").text();
+					$(this).val(defText);
+					break;
+				case "custom":
+					defText = theOptions.text;
 					$(this).val(defText);
 					break;
 				default:
@@ -43,17 +60,17 @@
 			if(theOptions.removeLabels == true) { $("label[for='" + $(this).attr("id") + "']").remove(); }
 			
 			// on to the good stuff... the focus and blur actions
-			$(this).focus(function() {
-				if($(this).val() == defText) { $(this).val(""); }
+			$(this).bind("focus.toggleval", function() {
+				if($(this).val() == $(this).data("defText")) { $(this).val(""); }
 				
 				// add the focusClass, remove changedClass
 				$(this).addClass(theOptions.focusClass).removeClass(theOptions.changedClass);
-			}).blur(function() {
-				if($(this).val() == "") { $(this).val(defText); }
+			}).bind("blur.toggleval", function() {
+				if($(this).val() == "") { $(this).val($(this).data("defText")); }
 				
 				// remove focusClass, add changedClass if, well, different
 				$(this).removeClass(theOptions.focusClass);
-				if($(this).val() != defText) { $(this).addClass(theOptions.changedClass); }
+				if($(this).val() != $(this).data("defText")) { $(this).addClass(theOptions.changedClass); }
 					else { $(this).removeClass(theOptions.changedClass); }
 			});
 		});
