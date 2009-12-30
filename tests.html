@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<!-- meta -->
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	
+	<!-- title -->
+	<title>ToggleVal Test Page</title>
+	
+	<!-- styles -->
+	<style type="text/css">
+		body { color: #333; font: 12px/normal Arial, Helvetica, sans-serif; }
+		fieldset { margin: 1em 0; }
+		.changed { color: green; }
+		.focused { color: red; }
+	</style>
+</head>
+
+<body>
+
+	<!-- content here -->
+	<h1>ToggleVal Test Page</h1>
+	
+	<form action="tests.html" method="get">
+		<fieldset>
+			<legend>Which test would you like to run?</legend>
+			<div>
+				<select id="selTest" name="test">
+					<optgroup label="Options">
+						<option value="default">Default options</option>
+						<option value="focusClass">focusClass</option>
+						<option value="changedClass">changedClass</option>
+						<option value="focusAndChangedClass">focusClass and changedClass</option>
+						<option value="populateFromLabel">populateFrom (label)</option>
+						<option value="populateFromLabelRemove">populateFrom (label, remove labels)</option>
+						<option value="populateFromTitle">populateFrom (title)</option>
+						<option value="populateFromCustom">populateFrom (custom)</option>
+						<option value="fullOptionsCustom">Full options (custom populate)</option>
+						<option value="fullOptionsDefaultsCustom">Full options (modifying defaults object, custom populate)</option>
+						<option value="destroy">Destroy functionality</option>
+					</optgroup>
+					<optgroup label="Selectors">
+						<option value="togglevalSelector">:toggleval selector</option>
+						<option value="changedSelector">:changed selector</option>
+						<option value="notChanged">Unchanged fields</option>
+					</optgroup>
+				</select>
+			</div>
+		</fieldset>
+	</form>
+	
+	<fieldset>
+		<legend>The test</legend>
+		<ul id="fields">
+			<li><input type="text" id="one" name="one" /></li>
+			<li><input type="text" id="two" name="two" /></li>
+			<li><input type="text" id="three" name="three" /></li>
+		</ul>
+	</fieldset>
+	
+	<!-- scripts -->
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+	<script type="text/javascript" src="jquery.toggleval.js"></script>
+	<script type="text/javascript">
+		// run test on change
+		$('#selTest').change(function() {
+			$('form').submit();
+		});
+		
+		// get query string
+		var qs = window.location.search.slice(1) || false;
+		if(qs) {
+			var test = qs.slice(qs.indexOf('=') + 1);
+			$('#selTest').val(test);
+		}
+		else {
+			var test = 'default';
+		}
+		
+		// run the test
+		switch(test) {
+			case 'focusClass':
+				$(':text').val('hello world').toggleVal({
+					focusClass: 'focused'
+				});
+				break;
+			case 'changedClass':
+				$(':text').val('hello world').toggleVal({
+					changedClass: 'changed'
+				});
+				break;
+			case 'focusAndChangedClass':
+				$(':text').val('hello world').toggleVal({
+					focusClass: 'focused',
+					changedClass: 'changed'
+				});
+				break;
+			case 'populateFromLabel':
+				$(':text').each(function() {
+					var id = $(this).attr('id');
+					$(this).before('<label for="' + id + '">A label</label>');
+				}).toggleVal({
+					populateFrom: 'label'
+				});
+				break;
+			case 'populateFromLabelRemove':
+				$(':text').each(function() {
+					var id = $(this).attr('id');
+					$(this).before('<label for="' + id + '">A label</label>');
+				}).toggleVal({
+					populateFrom: 'label',
+					removeLabels: true
+				});
+				break;
+			case 'populateFromTitle':
+				$(':text').attr('title', 'A title').toggleVal({
+					populateFrom: 'title'
+				});
+				break;
+			case 'populateFromCustom':
+				$(':text').toggleVal({
+					populateFrom: 'custom',
+					text: 'Custom text'
+				});
+				break;
+			case 'fullOptionsCustom':
+				$(':text').toggleVal({
+					focusClass: 'focused',
+					changedClass: 'changed',
+					populateFrom: 'custom',
+					text: 'Custom text'
+				});
+				break;
+			case 'fullOptionsDefaultsCustom':
+				$.fn.toggleVal.defaults = {
+					focusClass: 'focused',
+					changedClass: 'changed',
+					populateFrom: 'custom',
+					text: 'Custom text'
+				};
+				$(':text').toggleVal();
+				break;
+			case 'destroy':
+				$.fn.toggleVal.defaults = {
+					focusClass: 'focused',
+					changedClass: 'changed',
+					populateFrom: 'custom',
+					text: 'Custom text'
+				};
+				$(':text').toggleVal().blur(function() {
+					$(this).toggleVal('destroy');
+				});
+				break;
+			case 'togglevalSelector':
+				$(':text:lt(2)').val('hello world').toggleVal();
+				var count = $(':toggleval').length;
+				$('#fields').after('<div>' + count + ' ToggleVal field(s)</div>');
+				break;
+			case 'changedSelector':
+				var count = 0;
+				$('#fields').after('<div><span id="count">' + count + '</span> changed field(s)</div>');
+				$(':text:lt(2)').val('hello world').toggleVal();
+				$(':toggleval').blur(function() {
+					count = $(':changed').length;
+					$('#count').text(count);
+				});
+				break;
+			case 'notChanged':
+				$('#fields').after('<div><span id="count"></span> unchanged field(s)</div>');
+				$(':text:lt(2)').val('hello world').toggleVal();
+				var count = $(':toggleval').length;
+				$('#count').text(count);
+				$(':toggleval').blur(function() {
+					count = $(':toggleval').not(':changed').length;
+					$('#count').text(count);
+				});
+				break;
+			default:
+				$(':text').val('hello world').toggleVal();
+				break;
+		}
+	</script>
+
+</body>
+
+</html>

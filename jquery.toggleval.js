@@ -1,6 +1,6 @@
 /* -------------------------------------------------- *
- * ToggleVal 2.1
- * Updated: 1/16/09
+ * ToggleVal 3.0
+ * Updated: 12/30/09
  * -------------------------------------------------- *
  * Author: Aaron Kuzemchak
  * URL: http://aaronkuzemchak.com/
@@ -9,16 +9,11 @@
 ** -------------------------------------------------- */
 
 (function($) {
+	// main plugin function
 	$.fn.toggleVal = function(theOptions) {
-		// check whether we want real options, or to destroy functionality
+		// check whether we want real options, to destroy functionality, or to reset fields
 		if(!theOptions || typeof(theOptions) == "object") {
-			theOptions = $.extend({
-				focusClass: "tv-focused", // class during focus
-				changedClass: "tv-changed", // class after focus
-				populateFrom: "default", // choose from: default, label, custom, or alt
-				text: null, // text to use in conjunction with populateFrom: custom
-				removeLabels: false // remove labels associated with the fields
-			}, theOptions);
+			theOptions = $.extend({}, $.fn.toggleVal.defaults, theOptions);
 		}
 		else if(typeof(theOptions) == "string" && theOptions.toLowerCase() == "destroy") {
 			var destroy = true;
@@ -36,13 +31,15 @@
 			
 			// let's populate the text, if not default
 			switch(theOptions.populateFrom) {
-				case "alt":
-					defText = $(this).attr("alt");
+				case "title":
+					defText = $(this).attr("title");
 					$(this).val(defText);
 					break;
 				case "label":
-					defText = $("label[for='" + $(this).attr("id") + "']").text();
-					$(this).val(defText);
+					if($(this).attr("id")) {
+						defText = $("label[for='" + $(this).attr("id") + "']").text();
+						$(this).val(defText);
+					}
 					break;
 				case "custom":
 					defText = theOptions.text;
@@ -57,22 +54,50 @@
 			$(this).addClass("toggleval").data("defText", defText);
 			
 			// now that fields are populated, let's remove the labels if applicable
-			if(theOptions.removeLabels == true) { $("label[for='" + $(this).attr("id") + "']").remove(); }
+			if(theOptions.removeLabels == true && $(this).attr("id")) {
+				$("label[for='" + $(this).attr("id") + "']").remove();
+			}
 			
 			// on to the good stuff... the focus and blur actions
 			$(this).bind("focus.toggleval", function() {
 				if($(this).val() == $(this).data("defText")) { $(this).val(""); }
 				
 				// add the focusClass, remove changedClass
-				$(this).addClass(theOptions.focusClass).removeClass(theOptions.changedClass);
+				// $(this).addClass(theOptions.focusClass).removeClass(theOptions.changedClass);
+				$(this).addClass(theOptions.focusClass);
 			}).bind("blur.toggleval", function() {
-				if($(this).val() == "") { $(this).val($(this).data("defText")); }
+				if($(this).val() == "" && !theOptions.sticky) { $(this).val($(this).data("defText")); }
 				
 				// remove focusClass, add changedClass if, well, different
 				$(this).removeClass(theOptions.focusClass);
-				if($(this).val() != $(this).data("defText")) { $(this).addClass(theOptions.changedClass); }
+				if($(this).val() != '' && $(this).val() != $(this).data("defText")) { $(this).addClass(theOptions.changedClass); }
 					else { $(this).removeClass(theOptions.changedClass); }
 			});
 		});
 	};
+	
+	// default options
+	$.fn.toggleVal.defaults = {
+		focusClass: "tv-focused", // class during focus
+		changedClass: "tv-changed", // class after focus
+		populateFrom: "default", // choose from: default, label, custom, or title
+		text: null, // text to use in conjunction with populateFrom: custom
+		removeLabels: false, // remove labels associated with the fields
+		sticky: false // if true, default text won't reappear
+	};
+	
+	// create custom selectors
+	// :toggleval for affected elements
+	// :changed for changed elements
+	$.extend($.expr[":"], {
+		toggleval: function(elem) {
+			return $(elem).data("defText") || false;
+		},
+		changed: function(elem) {
+			if($(elem).data("defText") && $(elem).val() != $(elem).data("defText")) {
+				return true;
+			}
+			return false;
+		}
+	});
 })(jQuery);
