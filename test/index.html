@@ -37,6 +37,7 @@
 						<option value="populateFromLabelRemove">populateFrom (label, remove labels)</option>
 						<option value="populateFromTitle">populateFrom (title)</option>
 						<option value="populateFromCustom">populateFrom (custom)</option>
+						<option value="sticky">sticky</option>
 						<option value="fullOptionsCustom">Full options (custom populate)</option>
 						<option value="fullOptionsDefaultsCustom">Full options (modifying defaults object, custom populate)</option>
 						<option value="destroy">Destroy functionality</option>
@@ -123,6 +124,13 @@
 				$(':text').toggleVal({
 					populateFrom: 'custom',
 					text: 'Custom text'
+				});
+				break;
+			case 'sticky':
+				$(':text').toggleVal({
+					populateFrom: 'custom',
+					text: 'This will not re-appear',
+					sticky: true
 				});
 				break;
 			case 'fullOptionsCustom':
