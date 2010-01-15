@@ -1,10 +1,10 @@
 /* -------------------------------------------------- *
  * ToggleVal 3.0
- * Updated: 12/30/09
+ * Updated: 01/15/2010
  * -------------------------------------------------- *
  * Author: Aaron Kuzemchak
  * URL: http://aaronkuzemchak.com/
- * Copyright: 2008-2009 Aaron Kuzemchak
+ * Copyright: 2008-2010 Aaron Kuzemchak
  * License: MIT License
 ** -------------------------------------------------- */
 
